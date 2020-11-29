@@ -5,9 +5,20 @@ import { concatMap } from "http://dev.jspm.io/rxjs@6.5.3/_esm2015/operators/inde
 import { ajax } from  'https://dev.jspm.io/rxjs@6/_esm2015/ajax';
 
  const poll_url = url => interval(100).pipe(concatMap(() => ajax.getJSON(url)))
+console.log('part1')
 
 const warningsUrl = 'http://localhost:8080/warnings'
-const warningsSinceTimeUrl = 'http://localhost:8080/warnings/since/2020-11-29T16:57:10.690Z'
+//const warningsSinceTimeUrl = 'http://localhost:8080/warnings/since/2020-11-29T16:57:10.690Z'
+const getTime  = () =>   new Date().toISOString()
+console.log(getTime())
+
+const warningsSinceTimeUrl =  `http://localhost:8080/warnings/since/${getTime()}`
+
+
+console.log(warningsSinceTimeUrl)
+
+
+
 
 
 
@@ -16,7 +27,7 @@ const warningsSinceTime = ajax.getJSON(warningsSinceTimeUrl)
 
 var polledWarnings = interval(100).pipe(concatMap( _ => warnings))
 
-console.log(new Date().toISOString())
+
 
 
 
@@ -34,22 +45,20 @@ function subscribeToWarnings(){
         const filteredwarnings = result.warnings.filter( warning => warning.severity >= getSeverity())
         const warningField = document.getElementById("warningDiv");
         warningField.textContent = JSON.stringify(filteredwarnings)
-       
+        sinceLastUpdate()
       });
       
   }
 
- 
+ function sinceLastUpdate(){
   warningsSinceTime.subscribe(
     (result)  => {
       const warningsSinceTime = result.warnings
       const warningField = document.getElementById("changesDiv");
       warningField.textContent = JSON.stringify(warningsSinceTime)
 
-    }
-    
-
-  )
+    })
+  }
   
   function unSubscribeToWarnings(subscriber){
 
